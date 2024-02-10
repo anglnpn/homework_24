@@ -1,6 +1,8 @@
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+from materials.models import Course, Lesson
 from utils import NULLABLE
 
 
@@ -27,3 +29,20 @@ class User(AbstractUser):
 
     class Meta:
         verbose_name = 'пользователь'
+
+
+class Payments(models.Model):
+    payment_user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    payment_date = models.DateTimeField(auto_now=True, editable=False, verbose_name='дата платежа')
+    payment_course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True, verbose_name='курс оплаченный')
+    payment_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, blank=True, verbose_name='оплаченный урок')
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='сумма оплаты')
+    payment_method = models.CharField(max_length=50, choices=[('cash', 'Наличные'), ('transfer', 'Перевод')])
+
+    def __str__(self):
+        return f'{self.payment_user} {self.payment_date}'
+
+    class Meta:
+        verbose_name = 'платеж'
+
+    

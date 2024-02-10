@@ -12,6 +12,14 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
 
 
+class CourseListAPIView(generics.ListAPIView):
+    """
+    Представление списка курсов
+    """
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+
 class LessonCreateAPIView(generics.CreateAPIView):
     """
     Cоздание курса
