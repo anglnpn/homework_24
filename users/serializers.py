@@ -22,4 +22,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['name', 'surname', 'age', 'email', 'phone', 'avatar', 'city', 'payments']
+        fields = ['password', 'name', 'surname', 'age', 'email', 'phone', 'avatar', 'city', 'payments']
+
+
+class LimitedUserSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для пользователя, вывод только определенных полей
+    """
+
+    class Meta:
+        model = User
+        fields = ['name', 'age', 'avatar', 'city']
+

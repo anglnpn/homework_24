@@ -1,10 +1,13 @@
 from rest_framework import viewsets, generics, filters
 
-from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
+from materials.permissions import IsAuthor, IsModer
 from users.models import User, Payments
-from users.serializers import UserSerializer, PaymentsSerializer
+from users.permissions import IsUser
+from users.serializers import UserSerializer, PaymentsSerializer, LimitedUserSerializer
+
+from rest_framework.permissions import IsAuthenticated
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -13,6 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
 
 
 class UserCreateAPIView(generics.CreateAPIView):
@@ -20,22 +24,35 @@ class UserCreateAPIView(generics.CreateAPIView):
     Cоздание пользователя
     """
     serializer_class = UserSerializer
+    queryset = User.objects.all()
 
 
 class UserListAPIView(generics.ListAPIView):
     """
-    Просмотр списка уроков
+    Просмотр списка пользователей
     """
-    serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return UserSerializer
+        else:
+            return LimitedUserSerializer
 
 
 class UserRetrieveAPIView(generics.RetrieveAPIView):
     """
     Просмотр одного пользователя
     """
-    serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return UserSerializer
+        else:
+            return LimitedUserSerializer
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
@@ -44,6 +61,7 @@ class UserUpdateAPIView(generics.UpdateAPIView):
     """
     serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated, IsUser]
 
 
 class UserDestroyAPIView(generics.DestroyAPIView):
@@ -51,6 +69,7 @@ class UserDestroyAPIView(generics.DestroyAPIView):
     Удаление пользователя
     """
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated, IsUser]
 
 
 class PaymentsListAPIView(generics.ListAPIView):
@@ -65,3 +84,6 @@ class PaymentsListAPIView(generics.ListAPIView):
     filterset_fields = ['payment_course']
     search_fields = ['payment_method']
     ordering_fields = ['payment_date']
+    permission_classes = [IsAuthenticated, IsUser]
+
+

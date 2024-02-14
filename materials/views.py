@@ -1,7 +1,10 @@
 from rest_framework import viewsets, generics
 
 from materials.models import Course, Lesson
+from materials.permissions import IsModer, IsAuthor
 from materials.serializers import CourseSerializer, LessonSerializer
+
+from rest_framework.permissions import IsAuthenticated
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -12,19 +15,64 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
 
 
+class CourseCreateAPIView(generics.CreateAPIView):
+    """
+    Создание курса
+    """
+
+    serializer_class = CourseSerializer
+    queryset = Course.objects.all()
+    permission_classes = [IsAuthenticated, ~IsModer]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
 class CourseListAPIView(generics.ListAPIView):
     """
-    Представление списка курсов
+    Вывод списка курсов
     """
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+
+
+class CourseRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Просмотр одного курса
+    """
+    serializer_class = CourseSerializer
+    queryset = Course.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+
+
+class CourseUpdateAPIView(generics.UpdateAPIView):
+    """
+    Изменение курса
+    """
+    serializer_class = CourseSerializer
+    queryset = Course.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+
+
+class CourseDestroyAPIView(generics.DestroyAPIView):
+    """
+    Удаление курса
+    """
+    queryset = Course.objects.all()
+    permission_classes = [IsAuthenticated, IsAuthor]
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
     """
-    Cоздание курса
+    Cоздание урока
     """
     serializer_class = LessonSerializer
+    queryset = Lesson.objects.all()
+    permission_classes = [IsAuthenticated, IsAuthor]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -33,6 +81,7 @@ class LessonListAPIView(generics.ListAPIView):
     """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsAuthor]
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
@@ -41,6 +90,7 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
     """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsAuthor]
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
@@ -49,6 +99,7 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsAuthenticated, IsModer | IsAuthor]
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
@@ -56,3 +107,4 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     Удаление уроков
     """
     queryset = Lesson.objects.all()
+    permission_classes = [IsAuthenticated, IsAuthor, ~IsModer]
