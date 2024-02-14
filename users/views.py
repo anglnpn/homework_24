@@ -2,7 +2,6 @@ from rest_framework import viewsets, generics, filters
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from materials.permissions import IsAuthor, IsModer
 from users.models import User, Payments
 from users.permissions import IsUser
 from users.serializers import UserSerializer, PaymentsSerializer, LimitedUserSerializer
@@ -32,13 +31,8 @@ class UserListAPIView(generics.ListAPIView):
     Просмотр списка пользователей
     """
     queryset = User.objects.all()
+    serializer_class = LimitedUserSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_serializer_class(self):
-        if self.request.user.is_staff:
-            return UserSerializer
-        else:
-            return LimitedUserSerializer
 
 
 class UserRetrieveAPIView(generics.RetrieveAPIView):
@@ -85,5 +79,3 @@ class PaymentsListAPIView(generics.ListAPIView):
     search_fields = ['payment_method']
     ordering_fields = ['payment_date']
     permission_classes = [IsAuthenticated, IsUser]
-
-
