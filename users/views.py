@@ -8,14 +8,7 @@ from users.serializers import UserSerializer, PaymentsSerializer, LimitedUserSer
 
 from rest_framework.permissions import IsAuthenticated
 
-
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    Представление пользователя
-    """
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
+from django.contrib.auth.hashers import make_password
 
 
 class UserCreateAPIView(generics.CreateAPIView):
@@ -24,6 +17,13 @@ class UserCreateAPIView(generics.CreateAPIView):
     """
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+    def perform_create(self, serializer):
+        # Хэширование пароля перед сохранением пользователя
+        validated_data = serializer.validated_data
+        password = validated_data.get('password')
+        hashed_password = make_password(password)
+        serializer.save(password=hashed_password)
 
 
 class UserListAPIView(generics.ListAPIView):

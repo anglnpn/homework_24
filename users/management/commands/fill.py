@@ -6,6 +6,9 @@ from users.models import Payments, User
 
 
 class Command(BaseCommand):
+    """
+    Команда для создания платежа
+    """
 
     def handle(self, *args, **kwargs):
         user = User.objects.get(id=3)

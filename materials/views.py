@@ -7,14 +7,6 @@ from materials.serializers import CourseSerializer, LessonSerializer
 from rest_framework.permissions import IsAuthenticated
 
 
-class CourseViewSet(viewsets.ModelViewSet):
-    """
-    Представление курса
-    """
-    serializer_class = CourseSerializer
-    queryset = Course.objects.all()
-
-
 class CourseCreateAPIView(generics.CreateAPIView):
     """
     Создание курса
@@ -69,7 +61,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
     """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
-    permission_classes = [IsAuthenticated, IsAuthor]
+    permission_classes = [IsAuthenticated, ~IsModer]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
