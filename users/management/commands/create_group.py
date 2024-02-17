@@ -7,8 +7,14 @@ class Command(BaseCommand):
     Команда для создания группы модераторов
     """
 
+    def add_arguments(self, parser):
+        parser.add_argument('group_name', type=str, help='создание группы')
+
     def handle(self, *args, **kwargs):
-        moderator_group, created = Group.objects.get_or_create(name='moderator')
+        group_name = kwargs['group_name']
+
+        moderator_group, created = Group.objects.get_or_create(name=group_name)
+
         if created:
             self.stdout.write(self.style.SUCCESS('Группа модераторов создана'))
         else:
