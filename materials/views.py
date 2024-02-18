@@ -2,7 +2,7 @@ from rest_framework import viewsets, generics
 
 from materials.models import Course, Lesson
 from materials.permissions import IsModer, IsAuthor
-from materials.serializers import CourseSerializer, LessonSerializer
+from materials.serializers import CourseSerializer, LessonSerializer, CourseListSerializer
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -25,8 +25,8 @@ class CourseListAPIView(generics.ListAPIView):
     Вывод списка курсов
     """
     queryset = Course.objects.all()
-    serializer_class = CourseSerializer
-    permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+    serializer_class = CourseListSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class CourseRetrieveAPIView(generics.RetrieveAPIView):

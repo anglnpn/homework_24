@@ -14,11 +14,9 @@ class IsModer(BasePermission):
 
 class IsAuthor(BasePermission):
     """
-    Проверка на автора курса
+    Проверка на автора курса и урока
     """
 
-    def has_permission(self, request, view):
-        if request.user == view.get_object().author:
-            return True
-        else:
-            return False
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.author
+

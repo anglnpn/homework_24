@@ -14,7 +14,7 @@ urlpatterns = [
     path('course/<int:pk>/', CourseRetrieveAPIView.as_view(), name='course_get'),
     path('course/update/<int:pk>/', CourseUpdateAPIView.as_view(), name='course_update'),
     path('course/delete/<int:pk>/', CourseDestroyAPIView.as_view(), name='course_delete'),
-    path('course/', CourseListAPIView.as_view(), name='course_list'),
+    path('', CourseListAPIView.as_view(), name='course_list'),
     # урок
     path('lesson/create/', LessonCreateAPIView.as_view(), name='lesson'),
     path('lesson/', LessonListAPIView.as_view(), name='lesson_list'),
