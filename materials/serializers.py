@@ -1,12 +1,16 @@
 from rest_framework import serializers
 
 from materials.models import Course, Lesson
+from materials.validators import MaterialLinkCustomValidator
+from users.models import Subscribe
+from users.serializers import SubscribeSerializer
 
 
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = '__all__'
+        validators = [MaterialLinkCustomValidator(field='link')]
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -23,10 +27,19 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class CourseListSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
+    subscribe = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
-        fields = ['id', 'name_course', 'lessons_count']
+        fields = ['id', 'name_course', 'lessons_count', 'subscribe']
 
     def get_lessons_count(self, instance):
         return instance.lesson_set.count()
+
+    def get_subscribe(self, instance):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            user = request.user
+            if Subscribe.objects.filter(course=instance, user=user).exists():
+                return 'У вас есть подписка'
+        return 'У вас нет подписки'

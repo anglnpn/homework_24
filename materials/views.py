@@ -1,10 +1,11 @@
-from rest_framework import viewsets, generics
+from rest_framework import generics
 
 from materials.models import Course, Lesson
+from materials.paginators import MaterialsPagination
 from materials.permissions import IsModer, IsAuthor
 from materials.serializers import CourseSerializer, LessonSerializer, CourseListSerializer
 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class CourseCreateAPIView(generics.CreateAPIView):
@@ -15,6 +16,7 @@ class CourseCreateAPIView(generics.CreateAPIView):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, ~IsModer]
+    # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -27,6 +29,14 @@ class CourseListAPIView(generics.ListAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseListSerializer
     permission_classes = [IsAuthenticated]
+    # permission_classes = [AllowAny]
+    pagination_class = MaterialsPagination
+
+    def get(self, request):
+        queryset = Course.objects.all()
+        paginated_queryset = self.paginate_queryset(queryset)
+        serializer = CourseListSerializer(paginated_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class CourseRetrieveAPIView(generics.RetrieveAPIView):
@@ -36,6 +46,7 @@ class CourseRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+    # permission_classes = [AllowAny]
 
 
 class CourseUpdateAPIView(generics.UpdateAPIView):
@@ -45,6 +56,7 @@ class CourseUpdateAPIView(generics.UpdateAPIView):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+    # permission_classes = [AllowAny]
 
 
 class CourseDestroyAPIView(generics.DestroyAPIView):
@@ -53,6 +65,7 @@ class CourseDestroyAPIView(generics.DestroyAPIView):
     """
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, IsAuthor]
+    # permission_classes = [AllowAny]
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -62,6 +75,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModer]
+    # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -74,6 +88,14 @@ class LessonListAPIView(generics.ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+    # permission_classes = [AllowAny]
+    pagination_class = MaterialsPagination
+
+    def get(self, request):
+        queryset = Lesson.objects.all()
+        paginated_queryset = self.paginate_queryset(queryset)
+        serializer = LessonSerializer(paginated_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
@@ -83,6 +105,7 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+    # permission_classes = [AllowAny]
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
@@ -92,6 +115,7 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
+    # permission_classes = [AllowAny]
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
@@ -100,3 +124,4 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     """
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsAuthor, ~IsModer]
+    # permission_classes = [AllowAny]

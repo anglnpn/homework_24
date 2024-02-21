@@ -12,9 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         user = User.objects.get(id=3)
-        print(user)
         course = Course.objects.get(id=2)
-        print(course)
         payment = Payments.objects.create(
             payment_user=user,
             payment_course=course,

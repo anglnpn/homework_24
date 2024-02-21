@@ -29,6 +29,7 @@ class User(AbstractUser):
 
     class Meta:
         verbose_name = 'пользователь'
+        verbose_name_plural = 'пользователи'
 
 
 class Payments(models.Model):
@@ -47,5 +48,16 @@ class Payments(models.Model):
 
     class Meta:
         verbose_name = 'платеж'
+        verbose_name_plural = 'платежи'
 
-    
+
+class Subscribe(models.Model):
+    """
+    Модель для подписки на курс
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='курс')
+
+    class Meta:
+        verbose_name = 'подписка'
+        verbose_name_plural = 'подписки'
