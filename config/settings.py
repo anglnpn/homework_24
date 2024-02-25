@@ -14,7 +14,6 @@ from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,9 +41,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
+    'drf_yasg',
+    'corsheaders',
 
     'materials',
     'users',
+    'api',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -158,7 +162,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
-       'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.AllowAny',
     ],
 
 }
@@ -167,3 +171,17 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8005'
+]
+
+CORS_ALLOW_ALL_ORIGINS = False
+
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+
+

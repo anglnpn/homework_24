@@ -14,6 +14,7 @@ class Course(models.Model):
     image = models.ImageField(upload_to='media/', verbose_name='картинка курса', **NULLABLE)
     description = models.CharField(max_length=500, verbose_name='описание курса')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='автор', **NULLABLE)
+    price = models.IntegerField(verbose_name='цена курса', **NULLABLE)
 
     def __str__(self):
         return f'{self.name_course}'

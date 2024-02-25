@@ -1,9 +1,10 @@
 from rest_framework import serializers
 
 from materials.models import Course, Lesson
+from materials.services import convert_currencies
 from materials.validators import MaterialLinkCustomValidator
-from users.models import Subscribe
-from users.serializers import SubscribeSerializer
+from payments.models import Subscribe
+from payments.serializers import SubscribeSerializer
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -16,13 +17,18 @@ class LessonSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     lessons = LessonSerializer(source='lesson_set', many=True, read_only=True)
+    price_course = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
-        fields = '__all__'
+        fields = ['id', 'name_course', 'image', 'description', 'author', 'lessons_count', 'lessons', 'price',
+                  'price_course']
 
     def get_lessons_count(self, instance):
         return instance.lesson_set.count()
+
+    def get_price_course(self, instance):
+        return convert_currencies(instance.price)
 
 
 class CourseListSerializer(serializers.ModelSerializer):

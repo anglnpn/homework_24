@@ -16,6 +16,7 @@ class CourseCreateAPIView(generics.CreateAPIView):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, ~IsModer]
+
     # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
@@ -75,6 +76,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModer]
+
     # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
