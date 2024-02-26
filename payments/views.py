@@ -15,6 +15,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 
+import ast
+
 
 class PaymentsCreateAPIView(generics.CreateAPIView):
     """
@@ -59,6 +61,32 @@ class PaymentsCreateAPIView(generics.CreateAPIView):
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class PaymentStatusAPIView(generics.CreateAPIView):
+    """
+    Получение статуса оплаты
+    В пост запрос передается payments_id.
+    Контроллер передает его в сервисную функцию.
+    Функция делает запрос в stripe и получает статус оплаты.
+    """
+
+    serializer_class = PaymentsSerializer
+    queryset = Payments.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        payment_id = request.data.get('payment_id')
+
+        payment_obj = Payments.objects.get(id=14)
+
+        pay_session_str = payment_obj.payment_session_id
+        pay_session_dict = ast.literal_eval(pay_session_str)
+
+        session_id = pay_session_dict.get('session_id')
+
+        payment_status = get_payment_status(session_id)
+
+        return Response({'payment_status': payment_status}, status=status.HTTP_200_OK)
 
 
 class PaymentsListAPIView(generics.ListAPIView):
