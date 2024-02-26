@@ -77,7 +77,7 @@ class PaymentStatusAPIView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         payment_id = request.data.get('payment_id')
 
-        payment_obj = Payments.objects.get(id=14)
+        payment_obj = Payments.objects.get(id=payment_id)
 
         pay_session_str = payment_obj.payment_session_id
         pay_session_dict = ast.literal_eval(pay_session_str)
@@ -85,6 +85,13 @@ class PaymentStatusAPIView(generics.CreateAPIView):
         session_id = pay_session_dict.get('session_id')
 
         payment_status = get_payment_status(session_id)
+
+        if payment_status == 'complete':
+            payment_obj.payment_status ='Успешно'
+            payment_obj.save()
+        else:
+            payment_obj.payment_status = 'Неуспешно'
+            payment_obj.save()
 
         return Response({'payment_status': payment_status}, status=status.HTTP_200_OK)
 
