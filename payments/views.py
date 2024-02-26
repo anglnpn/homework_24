@@ -73,6 +73,7 @@ class PaymentStatusAPIView(generics.CreateAPIView):
 
     serializer_class = PaymentsSerializer
     queryset = Payments.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         payment_id = request.data.get('payment_id')
