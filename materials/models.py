@@ -15,6 +15,7 @@ class Course(models.Model):
     description = models.CharField(max_length=500, verbose_name='описание курса')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='автор', **NULLABLE)
     price = models.IntegerField(verbose_name='цена курса', **NULLABLE)
+    update_date = models.DateTimeField(auto_now=True, verbose_name='дата изменения', **NULLABLE)
 
     def __str__(self):
         return f'{self.name_course}'

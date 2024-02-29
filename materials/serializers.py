@@ -22,7 +22,7 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['id', 'name_course', 'image', 'description', 'author', 'lessons_count', 'lessons', 'price',
-                  'price_course']
+                  'price_course', 'update_date']
 
     def get_lessons_count(self, instance):
         return instance.lesson_set.count()
