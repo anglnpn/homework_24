@@ -142,8 +142,8 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
         course_obj.update_date = datetime.utcnow()
         course_obj.save()
 
-        # вызываем задачу для отправки письма
-        send_moderator_email(course_id)
+        # вызываем отложенную задачу для отправки письма
+        send_moderator_email.delay(course_id)
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
