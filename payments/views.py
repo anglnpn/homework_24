@@ -3,13 +3,14 @@ from rest_framework import generics, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 from materials.models import Course
+from materials.permissions import IsModerPayment, IsContributor
 from materials.services import convert_currencies
 from payments.models import Subscribe, Payments
 from payments.serializers import PaymentsSerializer, SubscribeSerializer
 from payments.services import create_product, create_price, create_payment_session, get_payment_status
 from users.permissions import IsUser
 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -88,7 +89,7 @@ class PaymentStatusAPIView(generics.CreateAPIView):
         payment_status = get_payment_status(session_id)
 
         if payment_status == 'complete':
-            payment_obj.payment_status ='Успешно'
+            payment_obj.payment_status = 'Успешно'
             payment_obj.save()
         else:
             payment_obj.payment_status = 'Неуспешно'
@@ -109,7 +110,16 @@ class PaymentsListAPIView(generics.ListAPIView):
     filterset_fields = ['payment_course']
     search_fields = ['payment_method']
     ordering_fields = ['payment_date']
-    permission_classes = [IsAuthenticated, IsUser]
+    permission_classes = [IsAuthenticated, IsModerPayment]
+
+
+class PaymentsRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Просмотр платежа
+    """
+    serializer_class = PaymentsSerializer
+    queryset = Payments.objects.all()
+    permission_classes = [IsAuthenticated, IsModerPayment | IsContributor]
 
 
 class SubscribeCreateAPIView(generics.CreateAPIView):
@@ -118,23 +128,36 @@ class SubscribeCreateAPIView(generics.CreateAPIView):
     """
     serializer_class = SubscribeSerializer
     queryset = Subscribe.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
         course_id = self.request.data.get('course_id')
+
         course_item = get_object_or_404(Course, id=course_id)
+        payment = Payments.objects.filter(
+            payment_user=user,
+            payment_course=course_id,
+            payment_status='Успешно')
+        # Проверяем, что пользователь оплатил курс
+        if payment:
+            # Получаем объект подписки по пользователю курсу
+            subs_item = Subscribe.objects.filter(
+                user=user,
+                course=course_item)
 
-        # Получаем объект подписки по пользователю курсу
-        subs_item = Subscribe.objects.filter(user=user, course=course_item)
-
-        # Если подписка у пользователя на этот курс есть - удаляем ее
-        if subs_item:
-            subs_item.delete()
-            message = 'подписка удалена'
-        # Если подписки у пользователя на этот курс нет - создаем ее
+            # Если подписка у пользователя на этот курс есть - удаляем ее
+            if subs_item:
+                subs_item.delete()
+                message = 'подписка удалена'
+            # Если подписки у пользователя на этот курс нет - создаем ее
+            else:
+                subscribe_new = Subscribe.objects.create(
+                    user=user,
+                    course=course_item)
+                subscribe_new.save()
+                message = 'подписка добавлена'
+            # Возвращаем ответ в API
+            return Response({"message": message})
         else:
-            subscribe_new = Subscribe.objects.create(user=user, course=course_item)
-            subscribe_new.save()
-            message = 'подписка добавлена'
-        # Возвращаем ответ в API
-        return Response({"message": message})
+            return Response({"message": 'Вы не оплатили данный курс'})

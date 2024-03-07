@@ -1,16 +1,12 @@
-from datetime import timezone, datetime
-
+from datetime import datetime
 from rest_framework import generics
-
 from materials.models import Course, Lesson
 from materials.paginators import MaterialsPagination
 from materials.permissions import IsModer, IsAuthor
-from materials.serializers import CourseSerializer, LessonSerializer, CourseListSerializer
-
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
-from rest_framework import status
-
+from materials.serializers import CourseSerializer, \
+    LessonSerializer, \
+    CourseListSerializer
+from rest_framework.permissions import IsAuthenticated
 from materials.tasks import send_moderator_email
 
 
@@ -18,12 +14,9 @@ class CourseCreateAPIView(generics.CreateAPIView):
     """
     Создание курса
     """
-
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, ~IsModer]
-
-    # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -36,7 +29,6 @@ class CourseListAPIView(generics.ListAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseListSerializer
     permission_classes = [IsAuthenticated]
-    # permission_classes = [AllowAny]
     pagination_class = MaterialsPagination
 
     def get(self, request):
@@ -53,7 +45,6 @@ class CourseRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
-    # permission_classes = [AllowAny]
 
 
 class CourseUpdateAPIView(generics.UpdateAPIView):
@@ -71,7 +62,6 @@ class CourseDestroyAPIView(generics.DestroyAPIView):
     """
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated, IsAuthor]
-    # permission_classes = [AllowAny]
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -81,8 +71,6 @@ class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, ~IsModer]
-
-    # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -95,7 +83,6 @@ class LessonListAPIView(generics.ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
-    # permission_classes = [AllowAny]
     pagination_class = MaterialsPagination
 
     def get(self, request):
@@ -112,7 +99,6 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
-    # permission_classes = [AllowAny]
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
@@ -122,8 +108,6 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsModer | IsAuthor]
-
-    # permission_classes = [AllowAny]
 
     def perform_update(self, serializer):
         """
@@ -152,4 +136,3 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     """
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsAuthor, ~IsModer]
-    # permission_classes = [AllowAny]

@@ -9,11 +9,21 @@ class UserSerializer(serializers.ModelSerializer):
     Сериализатор для пользователя
     """
 
-    payments = PaymentsSerializer(source='payments_set', many=True, read_only=True)
+    payments = PaymentsSerializer(source='payments_set',
+                                  many=True,
+                                  read_only=True)
 
     class Meta:
         model = User
-        fields = ['password', 'name', 'surname', 'age', 'email', 'phone', 'avatar', 'city', 'payments']
+        fields = ['password',
+                  'name',
+                  'surname',
+                  'age',
+                  'email',
+                  'phone',
+                  'avatar',
+                  'city',
+                  'payments']
 
 
 class LimitedUserSerializer(serializers.ModelSerializer):
@@ -24,6 +34,3 @@ class LimitedUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['name', 'age', 'avatar', 'city']
-
-
-
