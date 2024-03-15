@@ -23,6 +23,7 @@ requests = "^2.31.0"
 stripe = "^8.4.0"
 celery = "^5.3.6"
 flake8 = "^7.0.0"
+django-celery-beat = "^2.6.0"
 
 
 [build-system]
