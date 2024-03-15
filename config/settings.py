@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / '.env')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -85,13 +86,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DATABASES_NAME'),
         'USER': os.getenv('DATABASES_USER'),
-        'PASSWORD': os.getenv('DATABASES_PASSWORD')
-
+        'PASSWORD': os.getenv('DATABASES_PASSWORD'),
     }
 }
 
@@ -175,7 +176,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     os.getenv('CORS_ALLOWED_ORIGINS')
-    ]
+]
 
 CORS_ALLOW_ALL_ORIGINS = False
 
