@@ -9,7 +9,7 @@ ENV PATH="${POETRY_HOME}/bin/:${PATH}"
 
 WORKDIR /app
 
-EXPOSE 8007
+EXPOSE 8000
 
 RUN apt-get -y update && apt-get -y upgrade && \
     apt-get -y install bash python3 python3-dev postgresql-client  && \
