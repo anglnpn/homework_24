@@ -2,7 +2,7 @@ from django.db import models
 
 from materials.models import Course
 from users.models import User
-from utils import NULLABLE
+from config.utils import NULLABLE
 
 
 class Payments(models.Model):

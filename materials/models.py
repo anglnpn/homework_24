@@ -2,7 +2,7 @@ from django.db import models
 
 from config import settings
 
-from utils import NULLABLE
+from config.utils import NULLABLE
 
 
 class Course(models.Model):
